@@ -10,6 +10,7 @@
 require 'net/ssh/gateway'
 require 'csv'
 require 'yaml'
+require 'fileutils' # for the mkdir_p
 
 require 'bundler/setup'
 
@@ -85,6 +86,11 @@ Main {
     cast :bool
     default false
     description "If given, a password will be generated and applied to the zip file."
+  }
+
+  option('outputdir') {
+    argument_required
+    description "If given, query results will be written into this directory. Defaults to 'output/<database>/'"
   }
 
   argument('database') {
@@ -195,9 +201,10 @@ Main {
   end
 
   def make_output_dir
-    @output_dir = "output/#{@database}"
+    @output_dir = params['outputdir'].value
+    @output_dir ||= "output/#{@database}"
     unless File.exists? @output_dir
-      Dir.mkdir @output_dir
+      FileUtils.mkdir_p @output_dir
     end
   end
 
