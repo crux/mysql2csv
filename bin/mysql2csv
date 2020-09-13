@@ -6,6 +6,7 @@
 #
 # Author: Rob Miller <rob@bigfish.co.uk>
 
+#require 'net/ssh'
 require 'net/ssh/gateway'
 require 'csv'
 require 'yaml'
@@ -50,6 +51,11 @@ Main {
     default `whoami`.strip
     argument_required
     description "Username to use when creating the SSH tunnel to the mySQL server"
+  }
+
+  option('ssh-host') {
+    description "Optional: ssh gateway host inbetween user and database server"
+    argument_required
   }
 
   option('ssh-port') {
@@ -142,14 +148,27 @@ Main {
         options[:password] = params['ssh-password'].value
       end
 
-      gateway = Net::SSH::Gateway.new(params['hostname'].value, params['ssh-user'].value, options)
+      # hostname is a required argument, so can't be nil
+      database_host = params['hostname'].value
 
+      # the ssh host ist either the same as the database, or it can be a
+      # gateway(jump) host in between the user and the database host. Ssh host
+      # than acts as a gateway to the database host
+      ssh_host = params['ssh-host'].value
+      # use database host when ssh tunnel goes directly to the db machine
+      ssh_host ||= database_host 
+      gateway = Net::SSH::Gateway.new(ssh_host, params['ssh-user'].value, options)
+
+      # The SSH tunnel connects to the database host but will open a port local
+      # to this machine from which the mysql connection is forwared towards the
+      # remote database server through the ssh tunnel.
       host = '127.0.0.1'
-      port = gateway.open(host, params['port'].value)
-
+      port = gateway.open(database_host, params['port'].value)
+      at_exit { gateway.close(port) }
       puts "Done.\n\n"
 
-      at_exit { gateway.close(port) }
+      # store the localhost tunnel entry port for the MySQL connection config
+      params['port'].value = port
     end
 
     connection = {

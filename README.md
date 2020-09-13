@@ -99,6 +99,13 @@ line:
 
 	mysql2csv --user root -p foobar -H db.example.com -P 3306 foo_db queries.yml
 
+### Connecting with a ssh host as gateway to a a remote mySQL server 
+
+All the options and examples from above with the ssh connection still apply but this time the database server is not the same host as which the ssh connection goes to. You use the ssh connection to connect to a database server which is only reachable from the ssh host you are connecting to, using it as a jump host. Use the --ssh-host option:
+
+	mysql2csv --user root -p foobar -H db.example.com -P 3306 --ssh-host jump.example.com foo_db queries.yml
+
+
 ### Zipping or not zipping files
 
 If you pass `--zip`, the files output will be placed into a zip file. If
