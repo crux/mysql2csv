@@ -11,6 +11,7 @@ require 'net/ssh/gateway'
 require 'csv'
 require 'yaml'
 require 'fileutils' # for the mkdir_p
+require "rubyXL"
 
 require 'bundler/setup'
 
@@ -121,6 +122,7 @@ Main {
 
       next unless results
 
+      write_to_xls(results, name)
       write_to_csv(results, name)
 
       completed_queries += 1
@@ -223,6 +225,24 @@ Main {
         csv << row.values
       end
     end
+  end
+
+  def write_to_xls(results, name)
+    output_file = "#{@output_dir}/#{name}.xlsx"
+    (/\.xlsx$/i.match output_file) or  raise ArgumentError, "#{output_file}: not an xlsx file"
+
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook[0]
+
+    options = {:encoding => 'bom|UTF-8', :skip_blanks => true}
+    results.each_with_index do |row, row_idx|
+      # http://stackoverflow.com/questions/12407035/ruby-csv-get-current-line-row-number
+      row.values.each_with_index do |item, index|
+        worksheet.add_cell row_idx, index, item
+      end
+    end
+
+    workbook.write output_file
   end
 
   def zip_files

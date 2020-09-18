@@ -5,6 +5,7 @@ gem 'mysql2'
 gem 'escape'
 gem 'net-ssh'
 gem 'net-ssh-gateway'
+gem "rubyXL", "~> 3.3"
 
 group :development do
   gem 'letters'
