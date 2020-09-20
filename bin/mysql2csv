@@ -119,14 +119,15 @@ Main {
       puts "Doing query #{name}..."
 
       results = run_query(query)
-
       next unless results
+      puts "Got #{results.size} records"
 
+      puts "Writing excel.."
       write_to_xls(results, name)
+      puts "Writing csv.."
       write_to_csv(results, name)
 
       completed_queries += 1
-
       puts "Done.\n\n"
     end
 
@@ -211,12 +212,10 @@ Main {
   end
 
   def run_query(sql)
-    begin
-      $db.query(sql)
-    rescue Mysql2::Error => e
-      puts "The query didn't complete:"
-      puts "#{e.message}\n\n"
-    end
+    $db.query(sql)
+  rescue Mysql2::Error => e
+    puts "The query didn't complete:"
+    puts "#{e.message}\n\n"
   end
 
   def write_to_csv(results, name)
@@ -234,11 +233,15 @@ Main {
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
 
-    options = {:encoding => 'bom|UTF-8', :skip_blanks => true}
+    # first write some table heads
+    results.fields.each_with_index do |header, column_idx|
+      worksheet.add_cell 0, column_idx, header
+    end
+
     results.each_with_index do |row, row_idx|
       # http://stackoverflow.com/questions/12407035/ruby-csv-get-current-line-row-number
       row.values.each_with_index do |item, index|
-        worksheet.add_cell row_idx, index, item
+        worksheet.add_cell (1+row_idx), index, item
       end
     end
 
