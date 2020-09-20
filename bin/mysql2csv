@@ -11,7 +11,7 @@ require 'net/ssh/gateway'
 require 'csv'
 require 'yaml'
 require 'fileutils' # for the mkdir_p
-require "rubyXL"
+require 'axlsx'
 
 require 'bundler/setup'
 
@@ -230,22 +230,20 @@ Main {
     output_file = "#{@output_dir}/#{name}.xlsx"
     (/\.xlsx$/i.match output_file) or  raise ArgumentError, "#{output_file}: not an xlsx file"
 
-    workbook = RubyXL::Workbook.new
-    worksheet = workbook[0]
+    p = Axlsx::Package.new
+    wb = p.workbook
 
-    # first write some table heads
-    results.fields.each_with_index do |header, column_idx|
-      worksheet.add_cell 0, column_idx, header
-    end
+    wb.add_worksheet(name: name) do |sheet|
+      # first write some table heads
+      sheet.add_row results.fields
 
-    results.each_with_index do |row, row_idx|
-      # http://stackoverflow.com/questions/12407035/ruby-csv-get-current-line-row-number
-      row.values.each_with_index do |item, index|
-        worksheet.add_cell (1+row_idx), index, item
+      # data next
+      results.each_with_index do |row, row_idx|
+        sheet.add_row row.values
       end
     end
 
-    workbook.write output_file
+    p.serialize(output_file)
   end
 
   def zip_files
