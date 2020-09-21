@@ -1,3 +1,22 @@
+**Notice: This is forked from https://github.com/robmiller/mysql2csv**
+
+Rob's original implementation was a great start, but missing the option to use the ssh host just as a gateway to a database host behind it. So I added the `--ssh-host` opion:
+
+	# host <---> ssh-host <---> database-host
+	
+	$ bundle exec bin/mysql2csv \
+    	...\
+    	--ssh-user root --ssh-host ssh-host \
+    	--hostname database-host \
+    	...
+    	database-name reports.yml 
+
+Without this option, `--hostname` would always define ssh host AND database host at the same time. See also example section below: _Connecting with a ssh host as gateway to a a remote mySQL server_.
+
+On top of that I added saving to xlsx (Excel) files directly. For now, no extra command line options for that exists, it just saves an excel file next to the csv file. 
+
+Also I am not so happy with the design choice of having the script _calcluate_ some kind of output file name (`#{@output_dir}/#{name}.csv`) from the report and the database name somehow. I would prefere direct name and location control from the outside. Also I am not quite happy with having to transform pure SQL code into a yaml file for consumption. I will create some incompatible changes on that, therefor the fork. 
+
 # mysql2csv
 
 I often need to run a series of exports for a client, an account
