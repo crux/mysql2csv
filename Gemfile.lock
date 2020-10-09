@@ -1,5 +1,16 @@
+PATH
+  remote: .
+  specs:
+    mysql2csv (0.1.0)
+      caxlsx
+      escape
+      main
+      mysql2
+      net-ssh
+      net-ssh-gateway
+
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
     activesupport (6.0.3.3)
       concurrent-ruby (~> 1.0, >= 1.0.2)
@@ -43,6 +54,7 @@ GEM
       net-ssh (>= 4.0.0)
     nokogiri (1.10.10)
       mini_portile2 (~> 2.4.0)
+    rake (12.3.3)
     rubyzip (2.3.0)
     thread_safe (0.3.6)
     tzinfo (1.2.7)
@@ -54,14 +66,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bundler
   byebug (~> 11.1)
-  caxlsx
-  escape
   letters
-  main
-  mysql2
-  net-ssh
-  net-ssh-gateway
+  mysql2csv!
+  rake (~> 12.0)
 
 BUNDLED WITH
    2.1.4
