@@ -2,12 +2,12 @@ PATH
   remote: .
   specs:
     mysql2csv (0.1.0)
-      caxlsx
-      escape
-      main
-      mysql2
-      net-ssh
-      net-ssh-gateway
+      caxlsx (~> 3.0.2)
+      escape (~> 0.0.4)
+      main (~> 6.2)
+      mysql2 (~> 0.5.3)
+      net-ssh (~> 6.1)
+      net-ssh-gateway (~> 2.0.0)
 
 GEM
   remote: https://rubygems.org/
@@ -66,9 +66,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler
+  bundler (~> 2)
   byebug (~> 11.1)
-  letters
+  letters (~> 0.4)
   mysql2csv!
   rake (~> 12.0)
 
